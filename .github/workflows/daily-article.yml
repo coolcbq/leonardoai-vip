@@ -1,0 +1,25 @@
+name: Daily Article Generator
+
+on:
+  schedule:
+    # Run daily at 09:00 Beijing time (01:00 UTC)
+    - cron: "0 1 * * *"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generate and publish article
+        run: node scripts/generate-article.js
+        env:
+          QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}

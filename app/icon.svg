@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0A0A0A"/>
+      <stop offset="100%" stop-color="#141414"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F5E6C8"/>
+      <stop offset="50%" stop-color="#D4A853"/>
+      <stop offset="100%" stop-color="#B8942E"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background -->
+  <rect width="32" height="32" rx="6" ry="6" fill="url(#bg)"/>
+  <!-- Stylized L with brush stroke -->
+  <path d="M9 7 L9 24 L22 24" stroke="url(#gold)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Brush flourish extending from the L -->
+  <path d="M22 24 Q24 23 25 21" stroke="url(#gold)" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- AI sparkle elements -->
+  <circle cx="22" cy="10" r="1.2" fill="#D4A853" opacity="0.9"/>
+  <circle cx="26" cy="14" r="0.8" fill="#F5E6C8" opacity="0.6"/>
+  <circle cx="18" cy="8" r="0.7" fill="#F5E6C8" opacity="0.5"/>
+  <!-- Small star/sparkle -->
+  <path d="M24 7 L24.5 8.5 L26 9 L24.5 9.5 L24 11 L23.5 9.5 L22 9 L23.5 8.5 Z" fill="#D4A853" opacity="0.8"/>
+</svg>

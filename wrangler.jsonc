@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "leonardoai-vip",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-03-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "routes": [
+    { "pattern": "leonardoai.vip/*", "zone_name": "leonardoai.vip" },
+    { "pattern": "leonardoai.vip", "zone_name": "leonardoai.vip" }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "leonardoai-vip-db",
+      "database_id": "c8aacb1c-74de-46c3-bfdb-c61e04e3a344",
+      "migrations_dir": "db/migrations"
+    }
+  ]
+}

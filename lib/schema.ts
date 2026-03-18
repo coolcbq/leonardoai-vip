@@ -36,3 +36,9 @@ export const contacts = sqliteTable("contacts", {
   createdAt: text("created_at"),
   isRead: integer("is_read").default(0),
 });
+
+export const subscribers = sqliteTable("subscribers", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  email: text("email").notNull().unique(),
+  subscribedAt: text("subscribed_at"),
+});

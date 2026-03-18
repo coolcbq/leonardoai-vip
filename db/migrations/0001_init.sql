@@ -53,10 +53,11 @@ INSERT INTO friend_links (title, url, description, sort_order, is_active, create
 ('Cluely AI', 'https://cluelyai.net', 'AI-powered productivity and business solutions.', 5, 1, '2026-01-01');
 
 -- Seed data: Blog posts
-INSERT INTO posts (title, slug, content, excerpt, category, meta_title, meta_description, keywords, published_at, is_published) VALUES
+INSERT INTO posts (title, slug, content, excerpt, category, cover_image, meta_title, meta_description, keywords, published_at, is_published) VALUES
 (
   'Getting Started with Leonardo AI: A Complete Beginner''s Guide',
   'getting-started-with-leonardo-ai',
+
   '## Your First Steps with Leonardo AI
 
 Leonardo AI is one of the most powerful AI image generation platforms available today. Whether you are an artist, designer, marketer, or simply curious about AI art, Leonardo AI offers an intuitive interface and incredible capabilities to bring your creative visions to life.
@@ -96,6 +97,7 @@ Start with simple, descriptive prompts and gradually add more detail as you lear
 Once comfortable with basic generation, explore advanced features like ControlNet for pose-guided generation, the AI Canvas for precise editing, and prompt engineering techniques to achieve exactly the results you envision.',
   'Learn how to get started with Leonardo AI from scratch. This complete beginner''s guide covers account setup, dashboard navigation, your first image generation, and essential tips.',
   'Getting Started',
+  'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=630&fit=crop&auto=format&q=80',
   'Getting Started with Leonardo AI: Complete Beginner''s Guide | LeonardoAI.VIP',
   'Learn how to get started with Leonardo AI. Complete beginner''s guide covering account setup, first image generation, dashboard overview, and essential tips for new users.',
   'leonardo ai,getting started,beginner guide,ai image generation,leonardo ai tutorial,ai art',
@@ -157,6 +159,7 @@ While there is no strict character limit, prompts between 50-150 words tend to p
 The best way to improve your prompt engineering skills is through consistent practice. Generate multiple variations, compare results, and refine your approach over time. Study the community feed to see what prompts produce stunning results.',
   'Master the art of prompt engineering for Leonardo AI. Learn prompt structure, effective techniques, quality boosters, negative prompts, and common mistakes to avoid.',
   'Prompt Engineering',
+  'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1200&h=630&fit=crop&auto=format&q=80',
   'Leonardo AI Prompt Engineering Basics: Write Better Prompts | LeonardoAI.VIP',
   'Learn prompt engineering basics for Leonardo AI. Master prompt structure, style references, quality modifiers, negative prompts, and techniques for stunning AI-generated images.',
   'leonardo ai prompts,prompt engineering,ai art prompts,leonardo ai tips,text to image,ai image generation',
@@ -233,6 +236,7 @@ Beyond model selection, adjusting these parameters affects your results:
 There is no single "best" model in Leonardo AI — the ideal choice depends entirely on your project requirements. Experiment with different models, save your favorites, and build a personal workflow that leverages each model''s unique strengths.',
   'Compare the top Leonardo AI image generation models. Learn the strengths of Leonardo Phoenix, Diffusion XL, Anime XL, and community models to choose the right one for your project.',
   'AI Models',
+  'https://images.unsplash.com/photo-1547954575-855750c57bd3?w=1200&h=630&fit=crop&auto=format&q=80',
   'Image Generation Models Compared: Which Leonardo AI Model to Use | LeonardoAI.VIP',
   'Compare Leonardo AI image generation models including Phoenix, Diffusion XL, and Anime XL. Learn which model is best for your creative projects and how to optimize settings.',
   'leonardo ai models,ai image generation,leonardo phoenix,diffusion xl,anime xl,ai art models,model comparison',

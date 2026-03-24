@@ -17,13 +17,6 @@ const CATEGORIES = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const db = await getDb();
-
-  const allPosts = await db
-    .select({ slug: posts.slug, updatedAt: posts.updatedAt })
-    .from(posts)
-    .where(eq(posts.isPublished, 1));
-
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: "https://leonardoai.vip",
@@ -88,18 +81,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const categoryPages: MetadataRoute.Sitemap = CATEGORIES.map((cat) => ({
-    url: `https://leonardoai.vip/blog?category=${cat}`,
+    url: `https://leonardoai.vip/categories/${cat}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.7,
   }));
 
-  const postPages: MetadataRoute.Sitemap = allPosts.map((post) => ({
-    url: `https://leonardoai.vip/blog/${post.slug}`,
-    lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  let postPages: MetadataRoute.Sitemap = [];
+  try {
+    const db = await getDb();
+    const allPosts = await db
+      .select({ slug: posts.slug, updatedAt: posts.updatedAt })
+      .from(posts)
+      .where(eq(posts.isPublished, 1));
+
+    postPages = allPosts.map((post) => ({
+      url: `https://leonardoai.vip/blog/${post.slug}`,
+      lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
+  } catch {
+    // D1 query failed — return sitemap with static pages only
+  }
 
   return [...staticPages, ...categoryPages, ...postPages];
 }

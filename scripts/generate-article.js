@@ -262,8 +262,9 @@ function isSubjectUsed(subject, usedSubjects) {
   return false;
 }
 
-function pickRandomTopicWithDedup(usedSubjects) {
-  // Collect all available (unused) topics
+const CATEGORIES = TOPICS.map((t) => t.category);
+
+function pickRandomTopicFromPool(usedSubjects) {
   const available = [];
   for (const cat of TOPICS) {
     for (const subject of cat.subjects) {
@@ -274,12 +275,50 @@ function pickRandomTopicWithDedup(usedSubjects) {
   }
 
   if (available.length === 0) {
-    return null; // All 80 topics exhausted
+    return null; // predefined pool exhausted
   }
 
-  console.log(`Available unused topics: ${available.length} / 80`);
-  const pick = available[Math.floor(Math.random() * available.length)];
-  return pick;
+  console.log(`Available predefined topics: ${available.length} / 80`);
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+// Generate a brand-new topic via Qwen AI when predefined pool is exhausted
+async function generateNewTopic(usedSubjects, apiKey) {
+  const existingTitles = [...usedSubjects].slice(-50).join("\n- ");
+  const category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+
+  const prompt = `You are a content strategist for leonardoai.vip, a Leonardo AI tutorial site.
+
+Category: ${category}
+
+Here are titles of articles we have ALREADY published (do NOT repeat or closely overlap with any of these):
+- ${existingTitles}
+
+Generate ONE brand-new, unique tutorial topic for the "${category}" category about Leonardo AI.
+The topic should be:
+- Specific and actionable (not generic)
+- Different from all existing articles listed above
+- Relevant to Leonardo AI users in 2026
+- Interesting enough to attract search traffic
+
+Return ONLY a JSON object, no markdown:
+{"category": "${category}", "subject": "Your new topic title here"}`;
+
+  console.log("Predefined topics exhausted. Generating new topic with AI...");
+  let raw = await callQwenAPI(prompt, apiKey);
+  raw = raw.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?```\s*$/, "");
+
+  try {
+    const result = JSON.parse(raw);
+    if (!result.subject || !result.category) throw new Error("Missing fields");
+    // Validate category is one of ours
+    if (!CATEGORIES.includes(result.category)) result.category = category;
+    return result;
+  } catch {
+    // Fallback: use the raw text as subject
+    console.warn("Failed to parse AI topic response, using fallback");
+    return { category, subject: `Leonardo AI ${category} Guide for ${new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}` };
+  }
 }
 
 // Get a verified cover image, excluding already-used images
@@ -421,10 +460,10 @@ async function main() {
   const { usedSubjects, usedImages, usedSlugs } = await fetchExistingArticles(cfToken, accountId, dbId);
   console.log(`Found ${usedSubjects.size} existing articles, ${usedImages.size} used images, ${usedSlugs.size} used slugs`);
 
-  const topic = pickRandomTopicWithDedup(usedSubjects);
+  // Pick topic: try predefined pool first, then generate with AI
+  let topic = pickRandomTopicFromPool(usedSubjects);
   if (!topic) {
-    console.error("All 80 topics have been used! Please add new topics to the TOPICS array.");
-    process.exit(1);
+    topic = await generateNewTopic(usedSubjects, apiKey);
   }
   const { category, subject } = topic;
   console.log(`Selected topic: [${category}] ${subject}`);

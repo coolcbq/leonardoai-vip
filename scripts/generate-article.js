@@ -218,6 +218,107 @@ const UNSPLASH_PHOTOS = {
   ],
 };
 
+// Query D1 for existing articles' categories, titles, cover images, and slugs
+async function fetchExistingArticles(cfToken, accountId, dbId) {
+  const sql = `SELECT title, category, cover_image, slug FROM posts WHERE is_published = 1`;
+  const response = await fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${dbId}/query`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${cfToken}`,
+      },
+      body: JSON.stringify({ sql }),
+    }
+  );
+  const data = await response.json();
+  if (!data.success || !data.result?.[0]?.results) {
+    console.warn("Warning: could not fetch existing articles, proceeding without dedup");
+    return { usedSubjects: new Set(), usedImages: new Set(), usedSlugs: new Set() };
+  }
+  const rows = data.result[0].results;
+  const usedSubjects = new Set();
+  const usedImages = new Set();
+  const usedSlugs = new Set();
+
+  for (const row of rows) {
+    if (row.title) usedSubjects.add(row.title.toLowerCase());
+    if (row.cover_image) usedImages.add(row.cover_image);
+    if (row.slug) usedSlugs.add(row.slug);
+  }
+  return { usedSubjects, usedImages, usedSlugs };
+}
+
+// Check if a subject has already been covered by comparing against existing titles
+function isSubjectUsed(subject, usedSubjects) {
+  const subjectLower = subject.toLowerCase();
+  for (const title of usedSubjects) {
+    // Match if the existing title contains most key words from the subject
+    const subjectWords = subjectLower.split(/\s+/).filter((w) => w.length > 3);
+    const matchCount = subjectWords.filter((w) => title.includes(w)).length;
+    if (matchCount >= subjectWords.length * 0.6) return true;
+  }
+  return false;
+}
+
+function pickRandomTopicWithDedup(usedSubjects) {
+  // Collect all available (unused) topics
+  const available = [];
+  for (const cat of TOPICS) {
+    for (const subject of cat.subjects) {
+      if (!isSubjectUsed(subject, usedSubjects)) {
+        available.push({ category: cat.category, subject });
+      }
+    }
+  }
+
+  if (available.length === 0) {
+    return null; // All 80 topics exhausted
+  }
+
+  console.log(`Available unused topics: ${available.length} / 80`);
+  const pick = available[Math.floor(Math.random() * available.length)];
+  return pick;
+}
+
+// Get a verified cover image, excluding already-used images
+async function getVerifiedCoverImageWithDedup(category, slug, usedImages) {
+  // Collect ALL photo IDs across all categories into a flat pool
+  const allPhotos = [];
+  // Primary: photos from the target category first
+  const primaryPhotos = UNSPLASH_PHOTOS[category] || UNSPLASH_PHOTOS["Getting Started"];
+  for (const p of primaryPhotos) allPhotos.push(p);
+  // Secondary: photos from other categories
+  for (const [cat, photos] of Object.entries(UNSPLASH_PHOTOS)) {
+    if (cat !== category) {
+      for (const p of photos) {
+        if (!allPhotos.includes(p)) allPhotos.push(p);
+      }
+    }
+  }
+
+  const seed = slug.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+
+  for (let i = 0; i < allPhotos.length; i++) {
+    const idx = (seed + i) % allPhotos.length;
+    const url = `https://images.unsplash.com/photo-${allPhotos[idx]}?w=1200&h=630&fit=crop&auto=format&q=80`;
+    if (usedImages.has(url)) {
+      console.log(`Image ${allPhotos[idx]} already used, skipping...`);
+      continue;
+    }
+    if (await verifyImageUrl(url)) {
+      return url;
+    }
+    console.log(`Image ${allPhotos[idx]} returned 404, trying next...`);
+  }
+
+  // Fallback: use picsum.photos with slug seed (always unique, never repeats)
+  const fallbackUrl = `https://picsum.photos/seed/${slug}/1200/630`;
+  console.log("All Unsplash photos used or unavailable, falling back to picsum.photos");
+  return fallbackUrl;
+}
+
 async function callQwenAPI(prompt, apiKey) {
   const response = await fetch(
     "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
@@ -251,12 +352,7 @@ async function callQwenAPI(prompt, apiKey) {
   return data.choices[0].message.content;
 }
 
-function pickRandomTopic() {
-  const category = TOPICS[Math.floor(Math.random() * TOPICS.length)];
-  const subject =
-    category.subjects[Math.floor(Math.random() * category.subjects.length)];
-  return { category: category.category, subject };
-}
+// pickRandomTopic removed — replaced by pickRandomTopicWithDedup
 
 function generateSlug(title) {
   return title
@@ -278,26 +374,7 @@ async function verifyImageUrl(url) {
   }
 }
 
-// Get a verified cover image, trying multiple photos from the category
-async function getVerifiedCoverImage(category, slug) {
-  const photos =
-    UNSPLASH_PHOTOS[category] || UNSPLASH_PHOTOS["Getting Started"];
-  const seed = slug.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
-
-  // Try the primary photo first, then fallback to others
-  for (let i = 0; i < photos.length; i++) {
-    const idx = (seed + i) % photos.length;
-    const url = `https://images.unsplash.com/photo-${photos[idx]}?w=1200&h=630&fit=crop&auto=format&q=80`;
-    if (await verifyImageUrl(url)) {
-      return url;
-    }
-    console.log(`Image ${photos[idx]} returned 404, trying next...`);
-  }
-
-  // Ultimate fallback - return first photo from Getting Started
-  const fallbackUrl = `https://images.unsplash.com/photo-${UNSPLASH_PHOTOS["Getting Started"][0]}?w=1200&h=630&fit=crop&auto=format&q=80`;
-  return fallbackUrl;
-}
+// Old getVerifiedCoverImage kept as internal helper — main flow uses getVerifiedCoverImageWithDedup
 
 function escapeSQL(str) {
   return str.replace(/'/g, "''");
@@ -339,7 +416,17 @@ async function main() {
     process.exit(1);
   }
 
-  const { category, subject } = pickRandomTopic();
+  // Fetch existing articles for dedup
+  console.log("Fetching existing articles for dedup...");
+  const { usedSubjects, usedImages, usedSlugs } = await fetchExistingArticles(cfToken, accountId, dbId);
+  console.log(`Found ${usedSubjects.size} existing articles, ${usedImages.size} used images, ${usedSlugs.size} used slugs`);
+
+  const topic = pickRandomTopicWithDedup(usedSubjects);
+  if (!topic) {
+    console.error("All 80 topics have been used! Please add new topics to the TOPICS array.");
+    process.exit(1);
+  }
+  const { category, subject } = topic;
   console.log(`Selected topic: [${category}] ${subject}`);
 
   const categorySlug = category.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "and");
@@ -386,12 +473,20 @@ Return your response in this exact JSON format (no markdown wrapper, just raw JS
   const slug = generateSlug(article.title);
   const now = new Date().toISOString();
 
-  console.log("Verifying cover image...");
-  const coverImage = await getVerifiedCoverImage(category, slug);
+  // Ensure slug uniqueness — append date suffix if collision
+  let finalSlug = slug;
+  if (usedSlugs.has(finalSlug)) {
+    const dateSuffix = now.slice(0, 10).replace(/-/g, "");
+    finalSlug = `${slug}-${dateSuffix}`.slice(0, 100);
+    console.log(`Slug collision detected! "${slug}" → "${finalSlug}"`);
+  }
+
+  console.log("Verifying cover image (with dedup)...");
+  const coverImage = await getVerifiedCoverImageWithDedup(category, finalSlug, usedImages);
 
   const record = {
     title: article.title,
-    slug,
+    slug: finalSlug,
     content: article.content,
     excerpt: article.excerpt,
     category,

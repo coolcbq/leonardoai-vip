@@ -15,7 +15,7 @@ export default function CategoryCard({
 }: CategoryCardProps) {
   return (
     <Link
-      href={`/blog?category=${slug}`}
+      href={`/categories/${slug}`}
       className="group rounded-xl border border-[#262626] bg-[#141414] p-6 transition-colors hover:border-[#D4A853]/50"
     >
       <div className="text-3xl">{icon}</div>

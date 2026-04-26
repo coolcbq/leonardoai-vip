@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 const SITE_NAME = "LeonardoAI.VIP";
 const SITE_URL = "https://leonardoai.vip";
 const DEFAULT_DESCRIPTION =
-  "LeonardoAI.VIP is your ultimate guide to mastering Leonardo AI. Discover tutorials, prompt engineering tips, image generation techniques, and AI art guides to create stunning visuals.";
+  "LeonardoAI.VIP is an independent guide to mastering Leonardo AI. Discover tutorials, prompt engineering tips, image generation techniques, and AI art workflows.";
 
 interface PageMetadataOptions {
   title: string;

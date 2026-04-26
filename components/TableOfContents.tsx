@@ -36,7 +36,8 @@ export default function TableOfContents() {
       }
     });
 
-    setHeadings(items);
+    const frame = window.requestAnimationFrame(() => setHeadings(items));
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   useEffect(() => {

@@ -503,7 +503,7 @@ Return your response in this exact JSON format (no markdown wrapper, just raw JS
   let article;
   try {
     article = JSON.parse(raw);
-  } catch (e) {
+  } catch {
     console.error("Failed to parse Qwen response as JSON:");
     console.error(raw.slice(0, 500));
     process.exit(1);

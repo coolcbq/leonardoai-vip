@@ -7,59 +7,32 @@ import Hero from "@/components/Hero";
 import BlogCard from "@/components/BlogCard";
 import CategoryCard from "@/components/CategoryCard";
 import NewsletterCTA from "@/components/NewsletterCTA";
-import { JsonLd, websiteJsonLd, breadcrumbJsonLd } from "@/components/JsonLd";
+import {
+  JsonLd,
+  websiteJsonLd,
+  breadcrumbJsonLd,
+  faqJsonLd,
+} from "@/components/JsonLd";
 import { getDb } from "@/lib/db";
 import { posts, friendLinks } from "@/lib/schema";
 import { eq, desc, asc } from "drizzle-orm";
+import { categories } from "@/lib/categories";
 
-const categories = [
+const homepageFaq = [
   {
-    name: "Getting Started",
-    slug: "getting-started",
-    description: "Begin your Leonardo AI journey with beginner-friendly setup guides and basics",
-    icon: "\uD83D\uDE80",
+    question: "Is LeonardoAI.VIP the official Leonardo AI website?",
+    answer:
+      "No. LeonardoAI.VIP is an independent educational site that publishes tutorials, prompt guides, and workflow notes for Leonardo AI users.",
   },
   {
-    name: "Prompt Engineering",
-    slug: "prompt-engineering",
-    description: "Master the art of crafting perfect prompts for stunning AI-generated images",
-    icon: "\u270D\uFE0F",
+    question: "What should beginners learn first in Leonardo AI?",
+    answer:
+      "Start with model selection, prompt structure, negative prompts, aspect ratios, token usage, and basic Canvas edits before moving into advanced workflows.",
   },
   {
-    name: "Image Generation",
-    slug: "image-generation",
-    description: "Explore techniques for creating breathtaking AI artwork and illustrations",
-    icon: "\uD83C\uDFA8",
-  },
-  {
-    name: "AI Canvas",
-    slug: "ai-canvas",
-    description: "Learn to use Leonardo AI Canvas for editing, inpainting, and compositing",
-    icon: "\uD83D\uDDBC\uFE0F",
-  },
-  {
-    name: "Video & Motion",
-    slug: "video-and-motion",
-    description: "Create animated content and motion graphics with Leonardo AI tools",
-    icon: "\uD83C\uDFAC",
-  },
-  {
-    name: "Advanced Techniques",
-    slug: "advanced-techniques",
-    description: "Push boundaries with expert-level workflows, fine-tuning, and custom models",
-    icon: "\u2699\uFE0F",
-  },
-  {
-    name: "Style Guides",
-    slug: "style-guides",
-    description: "Achieve specific art styles from photorealism to anime to concept art",
-    icon: "\uD83C\uDF1F",
-  },
-  {
-    name: "Tips & Tricks",
-    slug: "tips-and-tricks",
-    description: "Quick hacks, hidden features, and productivity boosters for Leonardo AI",
-    icon: "\uD83D\uDCA1",
+    question: "Can Leonardo AI be used for commercial visuals?",
+    answer:
+      "Commercial use depends on your Leonardo AI plan, the asset source, and the current platform terms. Always review the official terms before publishing client or paid work.",
   },
 ];
 
@@ -87,6 +60,7 @@ export default async function HomePage() {
           { name: "Home", url: "https://leonardoai.vip" },
         ])}
       />
+      <JsonLd data={faqJsonLd(homepageFaq)} />
 
       <Hero />
 
@@ -146,6 +120,104 @@ export default async function HomePage() {
       {/* Newsletter CTA */}
       <section className="mx-auto max-w-3xl px-6 py-8">
         <NewsletterCTA />
+      </section>
+
+      {/* Core Keyword Guide */}
+      <section className="mx-auto max-w-6xl px-6 py-16">
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="rounded-2xl border border-[#262626] bg-[#141414] p-8">
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#D4A853]">
+              Leonardo AI Guide
+            </p>
+            <h2 className="mt-4 text-3xl font-bold text-neutral-100">
+              What is Leonardo AI and who is it for?
+            </h2>
+            <div className="mt-5 space-y-4 text-neutral-400">
+              <p>
+                Leonardo AI is an AI image generation platform used by creators,
+                marketers, game artists, and product teams to turn prompts,
+                references, and editing workflows into polished visuals. This
+                independent guide focuses on practical tutorials rather than
+                hype, so you can understand settings, prompts, models, Canvas
+                edits, and repeatable creative workflows.
+              </p>
+              <p>
+                If you are searching for Leonardo AI prompts, beginner setup
+                instructions, AI Canvas editing help, or workflow comparisons,
+                LeonardoAI.VIP organizes those topics into step-by-step guides
+                and category hubs that are easier to follow than scattered notes.
+              </p>
+            </div>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                href="/categories/getting-started"
+                className="rounded-full border border-[#D4A853]/30 px-4 py-2 text-sm font-medium text-[#D4A853] hover:bg-[#D4A853]/10"
+              >
+                Start with basics
+              </Link>
+              <Link
+                href="/categories/prompt-engineering"
+                className="rounded-full border border-[#D4A853]/30 px-4 py-2 text-sm font-medium text-[#D4A853] hover:bg-[#D4A853]/10"
+              >
+                Learn prompts
+              </Link>
+              <Link
+                href="/categories/ai-canvas"
+                className="rounded-full border border-[#D4A853]/30 px-4 py-2 text-sm font-medium text-[#D4A853] hover:bg-[#D4A853]/10"
+              >
+                Explore AI Canvas
+              </Link>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-[#D4A853]/20 bg-gradient-to-br from-[#D4A853]/10 to-transparent p-8">
+            <h2 className="text-2xl font-bold text-neutral-100">
+              Popular Leonardo AI workflows
+            </h2>
+            <ul className="mt-5 space-y-4 text-sm text-neutral-300">
+              <li>
+                <strong className="text-[#F5E6C8]">Prompt to image:</strong>{" "}
+                choose a model, write a structured prompt, set aspect ratio,
+                generate variations, then upscale the best result.
+              </li>
+              <li>
+                <strong className="text-[#F5E6C8]">Image refinement:</strong>{" "}
+                use negative prompts, seeds, and Canvas edits to fix faces,
+                hands, backgrounds, or composition issues.
+              </li>
+              <li>
+                <strong className="text-[#F5E6C8]">Content production:</strong>{" "}
+                create brand visuals, blog graphics, social posts, concept art,
+                thumbnails, and product-style scenes with consistent prompts.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="mx-auto max-w-4xl px-6 py-16">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-neutral-100">
+            Leonardo AI FAQ
+          </h2>
+          <p className="mt-3 text-neutral-400">
+            Quick answers for users comparing tools and learning the platform.
+          </p>
+        </div>
+        <div className="mt-8 space-y-4">
+          {homepageFaq.map((item) => (
+            <details
+              key={item.question}
+              className="rounded-xl border border-[#262626] bg-[#141414] p-6"
+            >
+              <summary className="cursor-pointer text-lg font-semibold text-neutral-100">
+                {item.question}
+              </summary>
+              <p className="mt-3 text-neutral-400">{item.answer}</p>
+            </details>
+          ))}
+        </div>
       </section>
 
       {/* Partner Links */}

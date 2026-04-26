@@ -3,6 +3,7 @@ import Link from "next/link";
 import CategoryCard from "@/components/CategoryCard";
 import { JsonLd, breadcrumbJsonLd } from "@/components/JsonLd";
 import { generatePageMetadata } from "@/lib/seo";
+import { categories } from "@/lib/categories";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Categories – Leonardo AI Tutorials by Topic",
@@ -20,65 +21,6 @@ export const metadata: Metadata = generatePageMetadata({
     "leonardo ai tips and tricks",
   ],
 });
-
-const categories = [
-  {
-    name: "Getting Started",
-    slug: "getting-started",
-    description:
-      "Begin your Leonardo AI journey with beginner-friendly setup guides and basics",
-    icon: "\uD83D\uDE80",
-  },
-  {
-    name: "Prompt Engineering",
-    slug: "prompt-engineering",
-    description:
-      "Master the art of crafting perfect prompts for stunning AI-generated images",
-    icon: "\u270D\uFE0F",
-  },
-  {
-    name: "Image Generation",
-    slug: "image-generation",
-    description:
-      "Explore techniques for creating breathtaking AI artwork and illustrations",
-    icon: "\uD83C\uDFA8",
-  },
-  {
-    name: "AI Canvas",
-    slug: "ai-canvas",
-    description:
-      "Learn to use Leonardo AI Canvas for editing, inpainting, and compositing",
-    icon: "\uD83D\uDDBC\uFE0F",
-  },
-  {
-    name: "Video & Motion",
-    slug: "video-and-motion",
-    description:
-      "Create animated content and motion graphics with Leonardo AI tools",
-    icon: "\uD83C\uDFAC",
-  },
-  {
-    name: "Advanced Techniques",
-    slug: "advanced-techniques",
-    description:
-      "Push boundaries with expert-level workflows, fine-tuning, and custom models",
-    icon: "\u2699\uFE0F",
-  },
-  {
-    name: "Style Guides",
-    slug: "style-guides",
-    description:
-      "Achieve specific art styles from photorealism to anime to concept art",
-    icon: "\uD83C\uDF1F",
-  },
-  {
-    name: "Tips & Tricks",
-    slug: "tips-and-tricks",
-    description:
-      "Quick hacks, hidden features, and productivity boosters for Leonardo AI",
-    icon: "\uD83D\uDCA1",
-  },
-];
 
 export default function CategoriesPage() {
   return (

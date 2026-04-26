@@ -8,17 +8,17 @@ Leonardo AI tutorial blog for **LeonardoAI.VIP** (https://leonardoai.vip). Built
 
 - **GitHub Repo**: https://github.com/coolcbq/leonardoai-vip.git
 - **Live Site**: https://leonardoai.vip
-- **Package Manager**: npm (NOT pnpm)
+- **Package Manager**: pnpm only. Do not use npm for install/build/deploy.
 
 ## Commands
 
 ```bash
-npm run dev                # Dev server (requires local D1: npm run db:migrate:local first)
-npm run build              # Production build
-npm run lint               # ESLint
-npm run deploy             # Build + deploy to Cloudflare Workers
-npm run db:migrate:local   # Apply D1 migrations locally
-npm run db:migrate:remote  # Apply D1 migrations to production
+corepack pnpm dev                # Dev server (requires local D1: pnpm db:migrate:local first)
+corepack pnpm build              # Production build
+corepack pnpm lint               # ESLint
+corepack pnpm deploy             # Build + deploy to Cloudflare Workers
+corepack pnpm db:migrate:local   # Apply D1 migrations locally
+corepack pnpm db:migrate:remote  # Apply D1 migrations to production
 ```
 
 No test framework is configured.
@@ -83,6 +83,7 @@ Three SQLite tables via Drizzle ORM:
 - **Target Keywords**: leonardo ai tutorial, leonardo ai prompts, ai image generation, ai art guide, leonardo ai tips
 - **Keyword Density**: 1-2%
 - **Internal Links**: Every article links to 2-3 related articles + categories + contact
+- **Core SEO Positioning**: Target "leonardo ai" as the broad core topic, but avoid pretending to be the official Leonardo AI site. Always describe the site as an independent educational/tutorial resource.
 
 ### Partner Links (user-specified only)
 - https://raoedits.top (Rao Edits)
@@ -139,3 +140,15 @@ Amber gold luxury dark theme — **NEVER use blue, purple, or green**:
 | `lib/seo.ts` | SEO metadata generation utility |
 | `scripts/generate-article.js` | Auto article generation script (Qwen API → D1) |
 | `wrangler.jsonc` | Cloudflare Workers + D1 config |
+
+## 2026-04-26 SEO Foundation Fix Record
+
+- Fixed category hub SEO by adding real `/categories/[slug]` pages for all eight topic clusters.
+- Updated category cards and article category links to point to clean category URLs instead of query-only `/blog?category=...` links.
+- Updated `app/sitemap.ts` so category URLs in the sitemap now correspond to real pages.
+- Added homepage explanatory content and FAQ around the core topic "Leonardo AI" while keeping an independent-site disclaimer.
+- Switched CI/CD and local project guidance from npm to pnpm to match the user's global workflow requirement.
+- Before pushing future SEO work, always run:
+  - `corepack pnpm lint`
+  - `corepack pnpm build`
+  - `corepack pnpm audit --audit-level moderate`

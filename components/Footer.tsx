@@ -16,8 +16,8 @@ export default function Footer() {
               </span>
             </Link>
             <p className="mt-3 text-sm text-neutral-400">
-              Your ultimate guide to mastering Leonardo AI. Tutorials, prompt
-              engineering tips, model comparisons, and more for AI image generation.
+              Independent Leonardo AI tutorials, prompt engineering tips, model
+              comparisons, and practical AI image generation workflows.
             </p>
           </div>
 

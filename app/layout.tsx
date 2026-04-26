@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
     template: "%s | LeonardoAI.VIP",
   },
   description:
-    "Master Leonardo AI with expert tutorials, prompt engineering guides, and AI art techniques. LeonardoAI.VIP helps creators unlock the full potential of Leonardo AI for stunning image generation.",
+    "Independent Leonardo AI tutorials, prompt engineering guides, and AI art techniques. LeonardoAI.VIP helps creators learn Leonardo AI workflows for better image generation.",
   keywords: [
     "leonardo ai tutorial",
     "leonardo ai prompts",
@@ -35,13 +36,13 @@ export const metadata: Metadata = {
     siteName: "LeonardoAI.VIP",
     title: "LeonardoAI.VIP - Leonardo AI Tutorials, Prompts & AI Art Guides",
     description:
-      "Master Leonardo AI with expert tutorials, prompt engineering guides, and AI art techniques. Unlock stunning image generation with LeonardoAI.VIP.",
+      "Independent Leonardo AI tutorials, prompt engineering guides, and AI art techniques for creators learning AI image generation workflows.",
   },
   twitter: {
     card: "summary_large_image",
     title: "LeonardoAI.VIP - Leonardo AI Tutorials, Prompts & AI Art Guides",
     description:
-      "Expert tutorials, prompt guides, and AI art techniques for Leonardo AI creators.",
+      "Independent tutorials, prompt guides, and AI art techniques for Leonardo AI creators.",
   },
   robots: {
     index: true,
@@ -65,19 +66,21 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <JsonLd data={organizationJsonLd()} />
-        <script
-          async
+        <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-CJG4YHDZT5"
+          strategy="afterInteractive"
         />
-        <script
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-CJG4YHDZT5');`,
           }}
         />
-        <script
-          async
+        <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5066440472869180"
           crossOrigin="anonymous"
+          strategy="afterInteractive"
         />
       </head>
       <body className="flex min-h-screen flex-col bg-[#0A0A0A] font-sans text-neutral-100 antialiased">

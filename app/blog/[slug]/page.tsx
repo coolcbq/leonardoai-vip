@@ -13,6 +13,7 @@ import { JsonLd, articleJsonLd, breadcrumbJsonLd } from "@/components/JsonLd";
 import { generatePageMetadata } from "@/lib/seo";
 import { getDb } from "@/lib/db";
 import { posts } from "@/lib/schema";
+import { getCategorySlugByName } from "@/lib/categories";
 import { eq, desc, ne, and } from "drizzle-orm";
 
 // ISR: cache page for 1 hour, revalidate in background after that
@@ -130,6 +131,7 @@ export default async function BlogPostPage({
   const keywords = post.keywords
     ? post.keywords.split(",").map((k) => k.trim())
     : [];
+  const categorySlug = getCategorySlugByName(post.category);
 
   return (
     <>
@@ -185,10 +187,14 @@ export default async function BlogPostPage({
               <div className="flex flex-wrap items-center gap-3">
                 {post.category && (
                   <Link
-                    href={`/blog?category=${post.category}`}
+                    href={
+                      categorySlug
+                        ? `/categories/${categorySlug}`
+                        : `/blog?category=${encodeURIComponent(post.category)}`
+                    }
                     className="rounded-full bg-[#D4A853]/10 px-3 py-1 text-xs font-medium text-[#D4A853] transition-colors hover:bg-[#D4A853]/20"
                   >
-                    {post.category.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                    {post.category}
                   </Link>
                 )}
                 {post.publishedAt && (

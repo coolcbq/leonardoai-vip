@@ -4,17 +4,7 @@ import type { MetadataRoute } from "next";
 import { getDb } from "@/lib/db";
 import { posts } from "@/lib/schema";
 import { eq } from "drizzle-orm";
-
-const CATEGORIES = [
-  "getting-started",
-  "prompt-engineering",
-  "image-generation",
-  "ai-canvas",
-  "video-and-motion",
-  "advanced-techniques",
-  "style-guides",
-  "tips-and-tricks",
-];
+import { categories } from "@/lib/categories";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
@@ -80,8 +70,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const categoryPages: MetadataRoute.Sitemap = CATEGORIES.map((cat) => ({
-    url: `https://leonardoai.vip/categories/${cat}`,
+  const categoryPages: MetadataRoute.Sitemap = categories.map((category) => ({
+    url: `https://leonardoai.vip/categories/${category.slug}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.7,

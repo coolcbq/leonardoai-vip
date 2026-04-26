@@ -16,8 +16,12 @@ jobs:
         with:
           node-version: 22
 
+      - run: corepack enable
+
+      - run: corepack pnpm install --frozen-lockfile
+
       - name: Generate and publish article
-        run: node scripts/generate-article.js
+        run: corepack pnpm exec node scripts/generate-article.js
         env:
           QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
